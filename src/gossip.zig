@@ -117,7 +117,7 @@ pub const GossipEngine = struct {
         const count = @min(self.config.dissemination_fanout, self.update_queue.items.len);
         if (count == 0) return &[_]GossipUpdate{};
 
-        var result = try self.allocator.alloc(GossipUpdate, count);
+        const result = try self.allocator.alloc(GossipUpdate, count);
         var kept: usize = 0;
 
         for (0..count) |i| {
