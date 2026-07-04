@@ -1,5 +1,7 @@
 # P2P Gossip Protocol
 
+[![CI](https://github.com/pavel-genai/p2p-gossip-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/pavel-genai/p2p-gossip-protocol/actions/workflows/ci.yml)
+
 A peer-to-peer gossip protocol implementation in Zig 0.13, based on the SWIM
 (Scalable Weakly-consistent Infection-style Process Group Membership) protocol.
 
