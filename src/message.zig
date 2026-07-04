@@ -194,7 +194,7 @@ test "encode then decode round-trip" {
         .ttl = 3,
     }};
 
-    var msg = Message{
+    const m = Message{
         .msg_type = .ping,
         .sender = sender,
         .seq = 42,
@@ -204,7 +204,7 @@ test "encode then decode round-trip" {
     };
 
     var buf: [512]u8 = undefined;
-    const encoded = try encode(&buf, &msg);
+    const encoded = try encode(&buf, &m);
 
     var decoded = try decode(allocator, encoded);
     defer decoded.deinit(allocator);
@@ -223,7 +223,7 @@ test "encode with no updates" {
     const allocator = std.testing.allocator;
     const sender = NodeId.fromAddrPort(.{ 127, 0, 0, 1 }, 8000);
 
-    var msg = Message{
+    const m = Message{
         .msg_type = .ack,
         .sender = sender,
         .seq = 1,
@@ -233,7 +233,7 @@ test "encode with no updates" {
     };
 
     var buf: [512]u8 = undefined;
-    const encoded = try encode(&buf, &msg);
+    const encoded = try encode(&buf, &m);
 
     var decoded = try decode(allocator, encoded);
     defer decoded.deinit(allocator);

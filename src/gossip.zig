@@ -53,7 +53,7 @@ pub const GossipEngine = struct {
     running: bool,
 
     pub fn init(allocator: Allocator, config: Config) !GossipEngine {
-        var tp = try Transport.init(allocator, config.bind_port);
+        const tp = try Transport.init(allocator, config.bind_port);
         const self_id = NodeId.fromAddrPort(.{ 127, 0, 0, 1 }, config.bind_port);
 
         var engine = GossipEngine{
@@ -73,7 +73,7 @@ pub const GossipEngine = struct {
             const seed_id = NodeId{ .addr = join_addr };
             _ = try engine.members.upsertAlive(seed_id, 0);
 
-            var join_msg = Message{
+            const join_msg = Message{
                 .msg_type = .join,
                 .sender = self_id,
                 .seq = engine.nextSeq(),
@@ -165,7 +165,7 @@ pub const GossipEngine = struct {
         const updates = try self.drainUpdates();
         defer if (updates.len > 0) self.allocator.free(updates);
 
-        var m = Message{
+        const m = Message{
             .msg_type = .ping,
             .sender = self.self_id,
             .seq = seq,
@@ -188,7 +188,7 @@ pub const GossipEngine = struct {
         const updates = try self.drainUpdates();
         defer if (updates.len > 0) self.allocator.free(updates);
 
-        var m = Message{
+        const m = Message{
             .msg_type = .ack,
             .sender = self.self_id,
             .seq = seq,
@@ -201,7 +201,7 @@ pub const GossipEngine = struct {
 
     fn sendPingReq(self: *GossipEngine, via: NodeId, target: NodeId) !void {
         const seq = self.nextSeq();
-        var m = Message{
+        const m = Message{
             .msg_type = .ping_req,
             .sender = self.self_id,
             .seq = seq,
@@ -215,7 +215,7 @@ pub const GossipEngine = struct {
     fn broadcastLeave(self: *GossipEngine) !void {
         for (self.members.peers.items) |p| {
             if (p.state != .alive and p.state != .suspect) continue;
-            var m = Message{
+            const m = Message{
                 .msg_type = .leave,
                 .sender = self.self_id,
                 .seq = self.nextSeq(),
