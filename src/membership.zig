@@ -177,7 +177,7 @@ pub const MembershipList = struct {
         }
 
         const count = @min(k, items.len);
-        var result = try self.allocator.alloc(NodeId, count);
+        const result = try self.allocator.alloc(NodeId, count);
         @memcpy(result, items[0..count]);
         return result;
     }
