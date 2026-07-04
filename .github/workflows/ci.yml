@@ -12,3 +12,27 @@ jobs:
           version: '0.13.0'
       - run: zig build
       - run: zig build test || true
+
+      - name: Install kcov
+        run: sudo apt-get update && sudo apt-get install -y kcov
+
+      - name: Run tests with kcov
+        run: |
+          mkdir -p coverage
+          # Build tests without running them, then find and run with kcov
+          zig build test -Doptimize=Debug 2>&1 || true
+          # Find test binaries in the zig cache
+          for bin in $(find .zig-cache -name "test" -type f -executable 2>/dev/null || true); do
+            kcov --include-path=src/ coverage/ "$bin" || true
+          done
+          # Fallback: if no test binaries found, just ensure coverage dir exists
+          if [ -z "$(ls -A coverage/ 2>/dev/null)" ]; then
+            echo "No kcov coverage generated; Codecov will report as unknown"
+          fi
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: coverage/
+          fail_ci_if_error: false
