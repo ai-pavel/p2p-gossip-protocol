@@ -14,4 +14,5 @@ RUN zig build -Doptimize=ReleaseFast
 FROM alpine:3.19
 COPY --from=build /app/zig-out/bin/gossip /usr/local/bin/gossip
 EXPOSE 7946/udp
+EXPOSE 8080/tcp
 ENTRYPOINT ["/usr/local/bin/gossip"]
