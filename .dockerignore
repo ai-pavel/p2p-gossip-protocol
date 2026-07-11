@@ -1,0 +1,8 @@
+target/
+build/
+.gradle/
+.git/
+*.lock
+node_modules/
+.zig-cache/
+
