@@ -25,9 +25,8 @@ jobs:
           for bin in zig-out/coverage/test_*; do
             kcov --include-path=$(pwd)/src coverage-out "$bin"
           done
-          find coverage-out -type f | head -20
       - uses: codecov/codecov-action@v4
         with:
-          files: coverage-out/*/coverage.lcov,coverage-out/coverage.lcov,coverage-out
+          directory: coverage-out
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
