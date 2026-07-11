@@ -69,6 +69,61 @@ fn printUsage() void {
 }
 
 // ---------------------------------------------------------------------------
+// HTTP health endpoint
+// ---------------------------------------------------------------------------
+
+const health_port: u16 = 8080;
+
+const health_body = "{\"status\":\"ok\",\"service\":\"p2p-gossip-protocol\"}";
+
+const health_response = "HTTP/1.1 200 OK\r\n" ++
+    "Content-Type: application/json\r\n" ++
+    std.fmt.comptimePrint("Content-Length: {d}\r\n", .{health_body.len}) ++
+    "Connection: close\r\n" ++
+    "\r\n" ++
+    health_body;
+
+const not_found_response = "HTTP/1.1 404 Not Found\r\n" ++
+    "Content-Length: 0\r\n" ++
+    "Connection: close\r\n" ++
+    "\r\n";
+
+fn serveHealthConnection(stream: std.net.Stream) void {
+    defer stream.close();
+    var buf: [1024]u8 = undefined;
+    const n = stream.read(&buf) catch return;
+    const response = if (std.mem.startsWith(u8, buf[0..n], "GET /health"))
+        health_response
+    else
+        not_found_response;
+    stream.writeAll(response) catch {};
+}
+
+fn runHealthServer() void {
+    const addr = std.net.Address.initIp4(.{ 0, 0, 0, 0 }, health_port);
+    var server = addr.listen(.{ .reuse_address = true }) catch |err| {
+        std.log.err("Health endpoint failed to listen on port {d}: {}", .{ health_port, err });
+        return;
+    };
+    defer server.deinit();
+
+    while (true) {
+        const conn = server.accept() catch continue;
+        serveHealthConnection(conn.stream);
+    }
+}
+
+fn startHealthServer() void {
+    if (std.Thread.spawn(.{}, runHealthServer, .{})) |thread| {
+        // Detached daemon thread: it dies with the process, so it never
+        // blocks the signal-driven engine.stop() shutdown path.
+        thread.detach();
+    } else |err| {
+        std.log.err("Failed to start health endpoint thread: {}", .{err});
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Signal handling
 // ---------------------------------------------------------------------------
 
@@ -144,6 +199,7 @@ pub fn main() !void {
 
     global_engine = &engine;
     installSignalHandlers();
+    startHealthServer();
 
     engine.run() catch |err| {
         std.log.err("Engine error: {}", .{err});
