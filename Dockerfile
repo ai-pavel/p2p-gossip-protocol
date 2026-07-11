@@ -1,4 +1,4 @@
-FROM ziglang/zig:0.13.0 AS build
+FROM ghcr.io/ziglang/zig:0.13.0 AS build
 WORKDIR /app
 COPY build.zig src/ ./
 RUN zig build -Doptimize=ReleaseFast
