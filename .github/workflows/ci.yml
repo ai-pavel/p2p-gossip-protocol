@@ -16,7 +16,7 @@ jobs:
         run: |
           wget https://github.com/SimonKagstrom/kcov/releases/download/v42/kcov-amd64.tar.gz
           tar xzf kcov-amd64.tar.gz
-          mv kcov-amd64/usr/local/bin/kcov /usr/local/bin/kcov
+          mv usr/local/bin/kcov /usr/local/bin/kcov
       - name: Build coverage binaries
         run: zig build coverage
       - name: Run kcov
