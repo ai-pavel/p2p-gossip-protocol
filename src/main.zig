@@ -74,7 +74,7 @@ fn printUsage() void {
 
 const health_port: u16 = 8080;
 
-const health_body = "{\"status\":\"ok\",\"service\":\"p2p-gossip-protocol\"}";
+const health_body = "{\"status\":\"ok\",\"service\":\"prattle\"}";
 
 const health_response = "HTTP/1.1 200 OK\r\n" ++
     "Content-Type: application/json\r\n" ++
